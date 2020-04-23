@@ -8,6 +8,11 @@
  	 *  License URI: https://www.gnu.org/licenses/gpl-2.0.html
 	 */
 	 require_once 'ezport-utils.php';
+	 require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
+	 
+	 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+				
 	 ob_start(); // Start the output buffer
 
 	/**
@@ -71,7 +76,7 @@
 						Export Order
 					</h1>
 					<p>
-						Melalui fitur ini, anda dapat mengexport seluruh order anda.
+						Melalui plugin ini, anda dapat mengexport seluruh order anda.
 					</p>
 					<form method='post'>
 						<?php wp_nonce_field('ezport-export'); ?>
@@ -84,14 +89,12 @@
 								<span>CSV</span>
 							</label>
 						</p>
-						<!-- Commented sampe solve
 						<p>
 							<label for="xlsx">
 								<input id="xlsx" type="radio" name="extension" value="xlsx" />
 								<span>XLSX</span>
 							</label>
 						</p>
-						-->
 						<p style="margin-top: 2em;">								
 							<input type='submit' class='button' name='export' value='Export Order' />
 						</p>
@@ -142,17 +145,24 @@
 			header("Pragma: no-cache"); // Disable caching HTTP 1.0
             header("Expires: 0"); // Proxies
 
-			// Part ini masih error @.@
-            if ($_POST['extension'] == 'xlsx') {				
+            if ($_POST['extension'] == 'xlsx') {
+				$styleArray = [
+					'font' => [
+        				'bold' => true,
+    				],
+				];
+				
                 $spreadsheet = new Spreadsheet();
-                $spreadsheet->getActiveSheet()
-                    ->fromArray(
-                        $result,
-                        NULL
-                    );
+				$worksheet = $spreadsheet->getActiveSheet();
+				
+                $worksheet->fromArray($result, NULL); // fill the value
+				
+				$highestColumn = $worksheet->getHighestColumn(); // get the farthest column
+					
+				$worksheet->getStyle("A1:${highestColumn}1")->applyFromArray($styleArray); // bold the headers
 
                 $writer = new Xlsx($spreadsheet);
-                $writer->save('php://output');
+                $writer->save('php://output'); // save it
             } else {
                 $output_file = fopen('php://output', 'w');
 
