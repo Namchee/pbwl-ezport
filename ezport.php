@@ -7,13 +7,8 @@
 	 *  License: GPL v2 or later
  	 *  License URI: https://www.gnu.org/licenses/gpl-2.0.html
 	 */
-	 require_once 'ezport-utils.php';
-	 require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
-	 
-	 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-	 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-				
-	 ob_start(); // Start the output buffer
+	require_once 'src/ezport-service.php';
+	require_once 'src/ezport-io.php';
 
 	/**
 	 * Prevent direct access without WP
@@ -90,6 +85,12 @@
 							</label>
 						</p>
 						<p>
+							<label for="xls">
+								<input id="xls" type="radio" name="extension" value="xls" />
+								<span>XLS</span>
+							</label>
+						</p>
+						<p>
 							<label for="xlsx">
 								<input id="xlsx" type="radio" name="extension" value="xlsx" />
 								<span>XLSX</span>
@@ -111,8 +112,6 @@
 			$blogname = str_replace(" ", "", get_option('blogname'));
 			$date = date('YmdHis');
 			$filename = $blogname . '-' . $date;
-            $format = ($_POST['extension'] == 'csv' ? 'csv' : 'xlsx'); 
-            $content_type = ($_POST['extension'] == 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 			 
 			$logger = wc_get_logger();
 			$logger->info("EZPort activated on $date");
@@ -137,43 +136,16 @@
 				foreach (ezport_extract_order_data($order) as $entry) {
 					$result[] = $entry;
 				}
-            }
+			}
+			
+			if ($_POST["extension"] == "csv") {
+				ezport_export_as_csv($result, $filename);
+			} else if ($_POST["extension"] == "xls") {
+				ezport_export_as_xls($result, $filename);
+			} else {
+				ezport_export_as_xlsx($result, $filename);
+			}
 
-            header("Content-Type: ${content_type}; charset=utf-8"); // Define content
-    		header("Content-Disposition: attachment; filename=${filename}.${format}"); // Define attachment
-			header("Cache-Control: no-cache, no-store, must-revalidate"); // Disable caching HTTP 1.1
-			header("Pragma: no-cache"); // Disable caching HTTP 1.0
-            header("Expires: 0"); // Proxies
-
-            if ($_POST['extension'] == 'xlsx') {
-				$styleArray = [
-					'font' => [
-        				'bold' => true,
-    				],
-				];
-				
-                $spreadsheet = new Spreadsheet();
-				$worksheet = $spreadsheet->getActiveSheet();
-				
-                $worksheet->fromArray($result, NULL); // fill the value
-				
-				$highestColumn = $worksheet->getHighestColumn(); // get the farthest column
-					
-				$worksheet->getStyle("A1:${highestColumn}1")->applyFromArray($styleArray); // bold the headers
-
-                $writer = new Xlsx($spreadsheet);
-                $writer->save('php://output'); // save it
-            } else {
-                $output_file = fopen('php://output', 'w');
-
-                foreach ($result as $entry) {
-                    fputcsv($output_file, $entry);
-                }
-
-                ob_end_flush();
-                fclose($output_file);
-            }
-            
         	exit();
 		}
 	}
