@@ -6,8 +6,8 @@ Namanya memang alay.
 
 ## Fitur
 
-1. Export bersama dengan _metadata_
-2. Mampu menghasilkan `.csv`, `.xls`, `.xlsx`
+1. Export bersama dengan _metadata_ produk
+2. Mampu menghasilkan _output_ dalam format `.csv`, `.xls`, `.xlsx`
 
 ## Instalasi
 
@@ -19,15 +19,15 @@ Namanya memang alay.
 
 ### Langkah Instalasi
 
-1. __Copy_ seluruh _file_ pada direktori plugin Wordpress
+1. _Copy_ seluruh _file_ pada direktori plugin Wordpress
 2. Jalankan `composer install`
 3. Aktifkan plugin melalui admin panel Wordpres
 
 ## Kontributor
 
-1. Cristopher - 2017730017
-2. Naofal Leo Agusta
-3. Gerry Fernando Lesmana
+1. Cristopher - 2017730017 - [GitHub]()
+2. Naofal Leo Agusta - 2016730056
+3. Gerry Fernando Lesmana - 2016730050
 
 ## Lisensi
 
