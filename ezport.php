@@ -76,6 +76,19 @@
 					<form method='post'>
 						<?php wp_nonce_field('ezport-export'); ?>
 						<p>
+							Order Status
+						</p>
+						<select name="status">
+							<option value="" selected>All</option>
+							<?php
+								$statuses = wc_get_order_statuses();
+								
+								foreach ($statuses as $key => $value) {
+									echo "<option value=${key}>" . $value . "</option>";
+								}	
+							?>
+						</select>
+						<p>
 							File Extension
 						</p>
 						<p>
@@ -115,28 +128,8 @@
 			 
 			$logger = wc_get_logger();
 			$logger->info("EZPort activated on $date");
-			 
-			$wc_args = array(
-				'limit' => -1, // unlimited
-				'type' => 'shop_order', // order saja
-				'order' => 'ASC', // urutkan menaik
-				'orderby' => 'ID', // urut berdasarkan ID
-			);
-			 
-			$orders = wc_get_orders($wc_args);
-			$result = array();
-			 
-			$result[] = ezport_get_field_list();
-			 
-			foreach ($orders as $order) {
-				if (empty($order)) {
-					continue;
-				}
-				 
-				foreach (ezport_extract_order_data($order) as $entry) {
-					$result[] = $entry;
-				}
-			}
+
+			$result = ezport_extract_orders($_POST);
 			
 			if ($_POST["extension"] == "csv") {
 				ezport_export_as_csv($result, $filename);

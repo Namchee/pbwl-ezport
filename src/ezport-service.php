@@ -77,14 +77,13 @@
 	}
 	
 	/**
-	 * Extract order data from WC_Order object and transform it into a CSV friendly array
+	 * Extract order data from WC_Order object and transform it into a 2-dimensional array
 	 */
 	function ezport_extract_order_data($order) {
 		$result = array(); // array 2 dimensi
 		
 		$base_array = array();
 		
-		// kuliin gayn~
 		$base_array[] = $order->get_order_number();
 		$base_array[] = ezport_pretty_print($order->get_status());
 		$base_array[] = ezport_format_date($order->get_date_created());
@@ -125,6 +124,39 @@
 			$result[] = $entry;
 		}
 		
+		return $result;
+	}
+
+	/**
+	 * Extract order data based on criteria
+	 */
+	function ezport_extract_orders($args) {
+		$wc_args = array(
+			'limit' => -1, // unlimited
+			'type' => 'shop_order', // order saja
+			'order' => 'ASC', // urutkan menaik
+			'orderby' => 'ID', // urut berdasarkan ID
+		);
+		
+		if (isset($args['status']) && strlen($args['status']) > 0) {
+			$wc_args['status'] = $args['status'];
+		}
+		
+		$orders = wc_get_orders($wc_args);
+		$result = array();
+			 
+		$result[] = ezport_get_field_list();
+			 
+		foreach ($orders as $order) {
+			if (empty($order)) {
+				continue;
+			}
+				 
+			foreach (ezport_extract_order_data($order) as $entry) {
+				$result[] = $entry;
+			}
+		}
+
 		return $result;
 	}
 ?>
