@@ -10,6 +10,26 @@
     ob_start(); // start the output buffer
 
     /**
+     * Export the data in the desired format
+     */
+    function ezport_export_data($data, $filename, $format) {
+        switch ($format) {
+            case 'csv':
+                ezport_export_as_csv($data, $filename);
+                break;
+            case 'xls':
+                ezport_export_as_xls($data, $filename);
+                break;
+            case 'xlsx':
+                ezport_export_as_xlsx($data, $filename);
+                break;
+            default:
+                echo 'Unsupported format';
+                exit();
+        }
+    }
+
+    /**
      * Export the data as CSV file
      */
     function ezport_export_as_csv($data, $filename) {

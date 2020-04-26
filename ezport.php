@@ -131,13 +131,7 @@
 
 			$result = ezport_extract_orders($_POST);
 			
-			if ($_POST["extension"] == "csv") {
-				ezport_export_as_csv($result, $filename);
-			} else if ($_POST["extension"] == "xls") {
-				ezport_export_as_xls($result, $filename);
-			} else {
-				ezport_export_as_xlsx($result, $filename);
-			}
+			ezport_export_data($result, $filename, $_POST['extension']);
 
         	exit();
 		}
