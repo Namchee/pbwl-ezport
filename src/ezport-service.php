@@ -3,7 +3,7 @@
 	 * Return all field lists
 	 */
 	function ezport_get_field_list() {
-		return array(
+		return [
 			"Order ID",
 			"Order Status",
 			"Date Created",
@@ -36,7 +36,7 @@
 			"Item Quantity",
 			"Item Subtotal",
 			"Item Notes"
-		);
+		];
 	}
 	
 	/**
@@ -67,7 +67,7 @@
 	 * Pretty print item metadata into single-liner string value
 	 */
 	function ezport_format_item_meta($metadata) {
-		$meta = array();
+		$meta = [];
 		
 		foreach ($metadata as $key => $value) {
 			$meta[] = "$value->value ($value->key)";
@@ -80,9 +80,9 @@
 	 * Extract order data from WC_Order object and transform it into a 2-dimensional array
 	 */
 	function ezport_extract_order_data($order) {
-		$result = array(); // array 2 dimensi
+		$result = []; // array 2 dimensi
 		
-		$base_array = array();
+		$base_array = [];
 		
 		$base_array[] = $order->get_order_number();
 		$base_array[] = ezport_pretty_print($order->get_status());
@@ -131,19 +131,16 @@
 	 * Extract order data based on criteria
 	 */
 	function ezport_extract_orders($args) {
-		$wc_args = array(
+		$wc_args = [
 			'limit' => -1, // unlimited
 			'type' => 'shop_order', // order saja
 			'order' => 'ASC', // urutkan menaik
 			'orderby' => 'ID', // urut berdasarkan ID
-		);
-		
-		if (isset($args['status']) && strlen($args['status']) > 0) {
-			$wc_args['status'] = $args['status'];
-		}
+			'status' => $args['status'] // include segala status yang dipilih
+		];
 		
 		$orders = wc_get_orders($wc_args);
-		$result = array();
+		$result = [];
 			 
 		$result[] = ezport_get_field_list();
 			 

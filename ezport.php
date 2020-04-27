@@ -75,20 +75,22 @@
 					</p>
 					<form method='post'>
 						<?php wp_nonce_field('ezport-export'); ?>
-						<p>
+						<p style="font-weight: bold;">
 							Order Status
 						</p>
-						<select name="status">
-							<option value="" selected>All</option>
-							<?php
-								$statuses = wc_get_order_statuses();
+						<?php
+							$statuses = wc_get_order_statuses();
 								
-								foreach ($statuses as $key => $value) {
-									echo "<option value=${key}>" . $value . "</option>";
-								}	
-							?>
-						</select>
-						<p>
+							foreach ($statuses as $key => $value) {
+								echo "<p>
+									<label for=${key}>
+										<input id=${key} type='checkbox' name='status[]' value=${key} checked />
+										<span>${value}</span>
+									</label>
+								</p>";
+							}	
+						?>
+						<p style="font-weight: bold;">
 							File Extension
 						</p>
 						<p>
