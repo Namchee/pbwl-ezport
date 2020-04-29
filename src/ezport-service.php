@@ -35,7 +35,8 @@
 			"Item Name",
 			"Item Quantity",
 			"Item Subtotal",
-			"Item Notes"
+			"Nama Siswa (Anggota 1)",
+			"Nama Siswa (Anggota 2)"
 		];
 	}
 	
@@ -61,19 +62,6 @@
 		}
 		
 		return "";
-	}
-	
-	/**
-	 * Pretty print item metadata into single-liner string value
-	 */
-	function ezport_format_item_meta($metadata) {
-		$meta = [];
-		
-		foreach ($metadata as $key => $value) {
-			$meta[] = "$value->value ($value->key)";
-		}
-		
-		return join(" --- ", $meta);
 	}
 	
 	/**
@@ -119,8 +107,13 @@
 			$entry[] = $item->get_name();
 			$entry[] = $item->get_quantity();
 			$entry[] = $item->get_total();
-			$entry[] = ezport_format_item_meta($item->get_formatted_meta_data());
 			
+			$metadata = $item->get_formatted_meta_data();
+			
+			foreach ($metadata as $key => $value) {
+				$entry[] = $value->value;
+			}
+
 			$result[] = $entry;
 		}
 		

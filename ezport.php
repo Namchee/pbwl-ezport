@@ -71,7 +71,7 @@
 						Export Order
 					</h1>
 					<p>
-						Melalui plugin ini, anda dapat mengexport seluruh order anda.
+						Melalui plugin ini, anda dapat mengexport seluruh informasi mengenai Pendaftaran CHIPS 2019.
 					</p>
 					<form method='post'>
 						<?php wp_nonce_field('ezport-export'); ?>
