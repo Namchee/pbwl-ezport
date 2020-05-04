@@ -106,7 +106,7 @@
 								<p style="font-weight: bold;">
 									Select Field
 								</p>
-								<div style="column-count: 3; margin-bottom:0;">
+								<div style="column-count: 3; margin-bottom:0;"> <!-- remove column-gap -->
 									<?php
 									foreach ($listField as $key => $value) {
 											if($key==0){
