@@ -4,6 +4,9 @@
 	 *	Description: Sebuah plugin WooCommerce sederhana untuk melakukan export pada order-order yang ada
 	 *	Author: Group E PBWL UNPAR
 	 *  Version: 1.0
+	 *  Requires at least: 5.2
+	 *  Requires PHP:      7.2
+	 *  Author URI:        https://github.com/Namchee/pbwl-ezport
 	 *  License: GPL v2 or later
  	 *  License URI: https://www.gnu.org/licenses/gpl-2.0.html
 	 */
@@ -53,7 +56,7 @@
 	 * Add EZPort submenu to WooCommerce menu
 	 */ 
 	function ezport_add_submenu_page() {
-		add_submenu_page('woocommerce', 'EZPort', 'EZPort - Export Orders', 'export', 'ezport', 'ezport_page');
+		add_submenu_page('woocommerce', 'EZPort', 'EZPort - Export Orders', 'view_woocommerce_reports', 'ezport', 'ezport_page');
 	}
 	 
 	/**
@@ -78,11 +81,11 @@
 						Export Order
 					</h1>
 					<p>
-						Melalui plugin ini, anda dapat mengexport seluruh informasi mengenai Pendaftaran CHIPS 2019.
+						Melalui plugin ini, anda dapat mengexport seluruh informasi mengenai orders yang ada.
 					</p>
 					<form method='post'>
-						<div style="display: flex;">
-							<?php wp_nonce_field('ezport-export'); ?>
+						<?php wp_nonce_field('ezport-export'); ?>
+						<div style="display: flex;">	
 							<div>
 								<p style="font-weight: bold;">
 									Order Status
@@ -103,7 +106,7 @@
 								<p style="font-weight: bold;">
 									Select Field
 								</p>
-								<div style="column-count: 3;column-gap: 2rem;margin-bottom:0;">
+								<div style="column-count: 3; margin-bottom:0;">
 									<?php
 									foreach ($listField as $key => $value) {
 											if($key==0){
@@ -115,7 +118,7 @@
 												</p>";
 											}
 											else{
-												echo "<p'>
+												echo "<p>
 														<label for=${key}>
 															<input id=${key} type='checkbox' name='fields[]' value=${key} checked />
 															<span>${value}</span>
@@ -148,11 +151,17 @@
 										<span>XLSX</span>
 									</label>
 								</p>
-								<p style="margin-top: 2em;">								
-									<input type='submit' class='button' name='export' value='Export Order' />
-								</p>
 							</div>
 						</div>
+						<div>
+							<p style="font-weight: bold;">
+								<label for="filename">Filename</label>
+							</p>
+							<input type="text" id="filename" name="filename" />
+						</div>
+						<p style="margin-top: 2em;">								
+							<input type='submit' class='button' name='export' value='Export Order' />
+						</p>
 					</form>
 				</div>
 			 <?php			
@@ -162,10 +171,15 @@
 			if (!current_user_can('view_woocommerce_reports')) { // If not shop manager, die immediately
 				wp_die('<p>You must have access to view woocommerce reports</p>');
 			}
-			 
-			$blogname = str_replace(" ", "", get_option('blogname'));
+
 			$date = date('YmdHis');
-			$filename = $blogname . '-' . $date;
+			$filename = $_POST["filename"];
+
+			if (strlen($filename) == 0) {
+				$blogname = str_replace(" ", "", get_option('blogname'));
+				
+				$filename = $blogname . '-' . $date;
+			}
 			 
 			$logger = wc_get_logger();
 			$logger->info("EZPort activated on $date");

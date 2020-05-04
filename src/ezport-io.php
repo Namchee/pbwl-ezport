@@ -76,7 +76,7 @@
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $worksheet->setTitle("EZPort - Result"); // set the worksheet name
+        $worksheet->setTitle("EZPort - Shop Orders"); // set the worksheet name
         
         $worksheet->fromArray($data, NULL); // fill the value
         
@@ -122,7 +122,7 @@
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $worksheet->setTitle("EZPort - Result"); // set the worksheet name
+        $worksheet->setTitle("EZPort - Shop Orders"); // set the worksheet name
         
         $worksheet->fromArray($data, NULL); // fill the value
         
