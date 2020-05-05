@@ -76,6 +76,37 @@
 		}
 		if (!isset($_POST['export'])) {
 			?>
+				<style>
+					.block {
+    					border: 1px solid #ccc;
+    					border-radius: 5px;
+    					padding: 1rem;
+					}
+
+					.ml-8 {
+    					margin-left: 2rem;
+					}
+
+					.mb-0 {
+    					margin-bottom: 0;
+					}
+
+					.mt-0 {
+    					margin-top: 0;
+					}
+
+					.cc-4 {
+    					column-count: 4;
+					}
+
+					.font-weight-bold {
+    					font-weight: bold;
+					}
+
+					.flex {
+    					display: flex;
+					}
+				</style>
 			 	<div>
 					<h1>
 						Export Order
@@ -85,9 +116,9 @@
 					</p>
 					<form method='post'>
 						<?php wp_nonce_field('ezport-export'); ?>
-						<div style="display: flex;">	
-							<div>
-								<p style="font-weight: bold;">
+						<div class="flex">	
+							<div class="block">
+								<p class="font-weight-bold">
 									Order Status
 								</p>
 								<?php
@@ -102,15 +133,15 @@
 									}	
 								?>
 							</div>
-							<div style="margin-left:2rem;">
-								<p style="font-weight: bold;">
+							<div class="block ml-8">
+								<p class="font-weight-bold">
 									Select Field
 								</p>
-								<div style="column-count: 3; margin-bottom:0;"> <!-- remove column-gap -->
+								<div class="cc-4 mb-0">
 									<?php
 									foreach ($listField as $key => $value) {
-											if($key==0){
-												echo "<p style='margin-top:0;'>
+											if ($key == 0) {
+												echo "<p class='mt-0'>
 													<label for=${key}>
 														<input id=${key} type='checkbox' name='fields[]' value=${key} checked />
 														<span>${value}</span>
@@ -129,8 +160,8 @@
 									?>
 								</div>
 							</div>
-							<div style="margin-left:2rem;">
-								<p style="font-weight: bold;">
+							<div class="block ml-8">
+								<p class="font-weight-bold">
 									File Extension
 								</p>
 								<p>
@@ -153,12 +184,12 @@
 								</p>
 							</div>
 						</div>
-						<div>
-							<p style="font-weight: bold;">
+						<p>
+							<p class="font-weight-bold">
 								<label for="filename">Filename</label>
 							</p>
 							<input type="text" id="filename" name="filename" />
-						</div>
+						</p>
 						<p style="margin-top: 2em;">								
 							<input type='submit' class='button' name='export' value='Export Order' />
 						</p>
@@ -195,8 +226,8 @@
 	/**
 	 * Hooks and action, do not touch this
 	 */
-	register_activation_hook(__FILE__, 'ezport_activation_hook');
-    register_deactivation_hook(__FILE__, 'ezport_deactivation_hook');
+	register_activation_hook(__FILE__, 'ezport_activation_hook'); // activation hook
+    register_deactivation_hook(__FILE__, 'ezport_deactivation_hook'); // deactivation hook
 	 
-    add_action('admin_menu', 'ezport_add_submenu_page', 90);
+    add_action('admin_menu', 'ezport_add_submenu_page', 90); // action on visit admin page
 ?>
