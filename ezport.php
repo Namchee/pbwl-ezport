@@ -103,16 +103,28 @@
 								<p style="font-weight: bold;">
 									Select Field
 								</p>
-								<?php
-								foreach ($listField as $key => $value) {
-										echo "<p>
-											<label for=${key}>
-												<input id=${key} type='checkbox' name='fields[]' value=${key} checked />
-												<span>${value}</span>
-											</label>
-										</p>";
-									}	
-								?>
+								<div style="column-count: 3;column-gap: 2rem;margin-bottom:0;">
+									<?php
+									foreach ($listField as $key => $value) {
+											if($key==0){
+												echo "<p style='margin-top:0;'>
+													<label for=${key}>
+														<input id=${key} type='checkbox' name='fields[]' value=${key} checked />
+														<span>${value}</span>
+													</label>
+												</p>";
+											}
+											else{
+												echo "<p'>
+														<label for=${key}>
+															<input id=${key} type='checkbox' name='fields[]' value=${key} checked />
+															<span>${value}</span>
+														</label>
+												</p>";
+											}
+										}	
+									?>
+								</div>
 							</div>
 							<div style="margin-left:2rem;">
 								<p style="font-weight: bold;">
