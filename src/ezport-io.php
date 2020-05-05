@@ -84,6 +84,12 @@
             
         $worksheet->getStyle("A1:${highestColumn}1")->applyFromArray($styleArray); // bold the headers
 
+        foreach ($worksheet->getColumnIterator() as $column) {
+            $worksheet
+                ->getColumnDimension($column->getColumnIndex())
+                ->setAutoSize(true);
+        }
+        
         $writer = new Xls($spreadsheet);
 
 		ob_end_clean(); // prevent XLS corruption
