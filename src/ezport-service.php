@@ -2,8 +2,8 @@
 	/**
 	 * Return all field lists
 	 */
-	function ezport_get_field_list() {
-		return [
+	function ezport_get_field_list($orders) {
+		$res=[
 			"Order ID",
 			"Order Status",
 			"Date Created",
@@ -34,10 +34,20 @@
 			"Item ID",
 			"Item Name",
 			"Item Quantity",
-			"Item Subtotal",
-			"Nama Siswa (Anggota 1)",
-			"Nama Siswa (Anggota 2)"
+			"Item Subtotal"
 		];
+		
+		foreach ($orders as $order) {
+			foreach ($order->get_items() as $item) {
+				$metadata = $item->get_formatted_meta_data();
+				foreach ($metadata as $key => $value) {
+					if (!in_array($value->key, $res)) {
+						$res[] = $value->key;
+					}
+				}
+			}
+		}
+		return $res;
 	}
 	
 	/**
@@ -67,63 +77,124 @@
 	/**
 	 * Extract order data from WC_Order object and transform it into a 2-dimensional array
 	 */
-	function ezport_extract_order_data($order) {
+	function ezport_extract_order_data($order,$fields,$listFields) {
 		$result = []; // array 2 dimensi
-		
+		$list_of_fields=$listFields;
 		$base_array = [];
 		
-		$base_array[] = $order->get_order_number();
-		$base_array[] = ezport_pretty_print($order->get_status());
-		$base_array[] = ezport_format_date($order->get_date_created());
-		$base_array[] = ezport_format_date($order->get_date_modified());
-		$base_array[] = ezport_format_date($order->get_date_completed());
-		$base_array[] = ezport_format_date($order->get_date_paid());
-		$base_array[] = $order->get_customer_note();
-		$base_array[] = $order->get_billing_first_name() . " " . $order->get_billing_last_name();
-		$base_array[] = $order->get_billing_company();
-		$base_array[] = $order->get_billing_address_1();
-		$base_array[] = $order->get_billing_address_2();
-		$base_array[] = $order->get_billing_city();
-		$base_array[] = $order->get_billing_state();
-		$base_array[] = $order->get_billing_postcode();
-		$base_array[] = $order->get_billing_country();
-		$base_array[] = $order->get_billing_email();
-		$base_array[] = $order->get_billing_phone();
-		$base_array[] = $order->get_shipping_first_name() . " " . $order->get_shipping_last_name();
-		$base_array[] = $order->get_shipping_company();
-		$base_array[] = $order->get_shipping_address_1();
-		$base_array[] = $order->get_shipping_address_2();
-		$base_array[] = $order->get_shipping_city();
-		$base_array[] = $order->get_shipping_state();
-		$base_array[] = $order->get_shipping_postcode();
-		$base_array[] = $order->get_shipping_country();
-		$base_array[] = $order->get_payment_method_title();
-		$base_array[] = $order->calculate_totals();
-		
 		foreach ($order->get_items() as $item) {
-			$entry = $base_array;
-			
-			$entry[] = $item->get_product_id();
-			$entry[] = $item->get_name();
-			$entry[] = $item->get_quantity();
-			$entry[] = $item->get_total();
-			
-			$metadata = $item->get_formatted_meta_data();
-			
-			foreach ($metadata as $key => $value) {
-				$entry[] = $value->value;
+			foreach ($fields as $value) {
+				if($value==0){
+					$base_array[] = $order->get_order_number();
+				}
+				elseif($value==1){
+					$base_array[] = ezport_pretty_print($order->get_status());
+				}
+				elseif($value==2){
+					$base_array[] = ezport_format_date($order->get_date_created());
+				}
+				elseif($value==3){
+					$base_array[] = ezport_format_date($order->get_date_modified());
+				}
+				elseif($value==4){
+					$base_array[] = ezport_format_date($order->get_date_completed());
+				}
+				elseif($value==5){
+					$base_array[] = ezport_format_date($order->get_date_paid());
+				}
+				elseif($value==6){
+					$base_array[] = $order->get_customer_note();
+				}
+				elseif($value==7){		
+					$base_array[] = $order->get_billing_first_name() . " " . $order->get_billing_last_name();
+				}
+				elseif($value==8){		
+					$base_array[] = $order->get_billing_company();
+				}
+				elseif($value==9){		
+					$base_array[] = $order->get_billing_address_1();
+				}
+				elseif($value==10){		
+					$base_array[] = $order->get_billing_address_2();
+				}
+				elseif($value==11){		
+					$base_array[] = $order->get_billing_city();
+				}
+				elseif($value==12){		
+					$base_array[] = $order->get_billing_state();
+				}
+				elseif($value==13){		
+					$base_array[] = $order->get_billing_postcode();
+				}
+				elseif(($value==14)){		
+					$base_array[] = $order->get_billing_country();
+				}
+				elseif($value==15){		
+					$base_array[] = $order->get_billing_email();
+				}
+				elseif($value==16){		
+					$base_array[] = $order->get_billing_phone();
+				}
+				elseif($value==17){		
+					$base_array[] = $order->get_shipping_first_name() . " " . $order->get_shipping_last_name();
+				}
+				elseif($value==18){		
+					$base_array[] = $order->get_shipping_company();
+				}
+				elseif($value==19){		
+					$base_array[] = $order->get_shipping_address_1();
+				}
+				elseif($value==20){		
+					$base_array[] = $order->get_shipping_address_2();
+				}
+				elseif($value==21){		
+					$base_array[] = $order->get_shipping_city();
+				}
+				elseif($value==22){		
+					$base_array[] = $order->get_shipping_state();
+				}
+				elseif($value==23){		
+					$base_array[] = $order->get_shipping_postcode();
+				}
+				elseif($value==24){		
+					$base_array[] = $order->get_shipping_country();
+				}
+				elseif($value==25){		
+					$base_array[] = $order->get_payment_method_title();
+				}
+				elseif($value==26){		
+					$base_array[] = $order->calculate_totals();
+				}
+				elseif($value==27){		
+					$base_array[] = $item->get_product_id();
+				}
+				elseif($value==28){		
+					$base_array[] =$item->get_name();
+				}
+				elseif($value==29){		
+					$base_array[] = $item->get_quantity();
+				}
+				elseif($value==30){		
+					$base_array[] = $item->get_total();
+				}
+				$metadata = $item->get_formatted_meta_data();
+				foreach ($metadata as $meta) {
+					if(strcasecmp($meta->key,$list_of_fields[$value])==0){
+						$base_array[] = $meta->value;
+					}
+				}
 			}
-
-			$result[] = $entry;
 		}
+		$result[] = $base_array;
 		
 		return $result;
 	}
 
+
 	/**
 	 * Extract order data based on criteria
 	 */
-	function ezport_extract_orders($args) {
+	function ezport_extract_orders($args,$listFields,$orders) {
 		$wc_args = [
 			'limit' => -1, // unlimited
 			'type' => 'shop_order', // order saja
@@ -131,19 +202,24 @@
 			'orderby' => 'ID', // urut berdasarkan ID
 			'status' => $args['status'] // include segala status yang dipilih
 		];
-		
-		$orders = wc_get_orders($wc_args);
 		$result = [];
-			 
-		$result[] = ezport_get_field_list();
-			 
+		$fields=[];
+		foreach($args['fields'] as $value){
+			$fields[]=$listFields[$value];
+		} 
+		$result[] =$fields ;
+		$status=[];
+		foreach($args['status'] as $value){
+			$status[]=substr($value,3);
+		} 
 		foreach ($orders as $order) {
 			if (empty($order)) {
 				continue;
 			}
-				 
-			foreach (ezport_extract_order_data($order) as $entry) {
-				$result[] = $entry;
+			if(in_array($order->get_status(),$status)){	 
+				foreach (ezport_extract_order_data($order,$args['fields'],$listFields) as $entry) {
+					$result[] = $entry;
+				}
 			}
 		}
 

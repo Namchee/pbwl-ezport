@@ -60,10 +60,17 @@
 	 * EZPort page functionality
 	 */
 	function ezport_page() {
+		$wc_args = [
+			'limit' => -1, // unlimited
+			'type' => 'shop_order', // order saja
+			'order' => 'ASC', // urutkan menaik
+			'orderby' => 'ID' // urut berdasarkan ID
+		];								
+		$orders=wc_get_orders($wc_args);
+		$listField = ezport_get_field_list($orders);
 		if (!ezport_check_dependency()) {
 			show_dependency_error_message();
 		}
-		 
 		if (!isset($_POST['export'])) {
 			?>
 			 	<div>
@@ -74,46 +81,66 @@
 						Melalui plugin ini, anda dapat mengexport seluruh informasi mengenai Pendaftaran CHIPS 2019.
 					</p>
 					<form method='post'>
-						<?php wp_nonce_field('ezport-export'); ?>
-						<p style="font-weight: bold;">
-							Order Status
-						</p>
-						<?php
-							$statuses = wc_get_order_statuses();
-								
-							foreach ($statuses as $key => $value) {
-								echo "<p>
-									<label for=${key}>
-										<input id=${key} type='checkbox' name='status[]' value=${key} checked />
-										<span>${value}</span>
+						<div style="display: flex;">
+							<?php wp_nonce_field('ezport-export'); ?>
+							<div>
+								<p style="font-weight: bold;">
+									Order Status
+								</p>
+								<?php
+									$statuses = wc_get_order_statuses();
+									foreach ($statuses as $key => $value) {
+										echo "<p>
+											<label for=${key}>
+												<input id=${key} type='checkbox' name='status[]' value=${key} checked />
+												<span>${value}</span>
+											</label>
+										</p>";
+									}	
+								?>
+							</div>
+							<div style="margin-left:2rem;">
+								<p style="font-weight: bold;">
+									Select Field
+								</p>
+								<?php
+								foreach ($listField as $key => $value) {
+										echo "<p>
+											<label for=${key}>
+												<input id=${key} type='checkbox' name='fields[]' value=${key} checked />
+												<span>${value}</span>
+											</label>
+										</p>";
+									}	
+								?>
+							</div>
+							<div style="margin-left:2rem;">
+								<p style="font-weight: bold;">
+									File Extension
+								</p>
+								<p>
+									<label for="csv">
+										<input id="csv" type="radio" name="extension" value="csv" checked />
+										<span>CSV</span>
 									</label>
-								</p>";
-							}	
-						?>
-						<p style="font-weight: bold;">
-							File Extension
-						</p>
-						<p>
-							<label for="csv">
-								<input id="csv" type="radio" name="extension" value="csv" checked />
-								<span>CSV</span>
-							</label>
-						</p>
-						<p>
-							<label for="xls">
-								<input id="xls" type="radio" name="extension" value="xls" />
-								<span>XLS</span>
-							</label>
-						</p>
-						<p>
-							<label for="xlsx">
-								<input id="xlsx" type="radio" name="extension" value="xlsx" />
-								<span>XLSX</span>
-							</label>
-						</p>
-						<p style="margin-top: 2em;">								
-							<input type='submit' class='button' name='export' value='Export Order' />
-						</p>
+								</p>
+								<p>
+									<label for="xls">
+										<input id="xls" type="radio" name="extension" value="xls" />
+										<span>XLS</span>
+									</label>
+								</p>
+								<p>
+									<label for="xlsx">
+										<input id="xlsx" type="radio" name="extension" value="xlsx" />
+										<span>XLSX</span>
+									</label>
+								</p>
+								<p style="margin-top: 2em;">								
+									<input type='submit' class='button' name='export' value='Export Order' />
+								</p>
+							</div>
+						</div>
 					</form>
 				</div>
 			 <?php			
@@ -131,7 +158,7 @@
 			$logger = wc_get_logger();
 			$logger->info("EZPort activated on $date");
 
-			$result = ezport_extract_orders($_POST);
+			$result = ezport_extract_orders($_POST,$listField,$orders);
 			
 			ezport_export_data($result, $filename, $_POST['extension']);
 
