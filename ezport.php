@@ -200,7 +200,14 @@
 								<p class="font-weight-bold mt-0">
 									<label for="filename">Filename</label>
 								</p>
-								<input type="text" id="filename" name="filename" />
+								<input type="text" id="filename" name="filename" /> <span class='file-ext'></span>
+							</div>
+							<div class="block">
+								<p class="font-weight-bold mt-0">
+									Last Modified On
+								</p>
+								<input type="text" id="date-start" name="date-start" /> &mdash;
+								<input type="text" id="date-end" name="date-end" />
 							</div>
 						</div>
 						<p class="block">								
@@ -208,6 +215,32 @@
 						</p>
 					</form>
 				</div>
+				
+				<script type="text/javascript">
+    				jQuery(document).ready(function($) {
+        				$('#date-start').datepicker({
+							dateFormat: "yy-mm-dd"
+						});
+						$('#date-end').datepicker({
+							dateFormat: "yy-mm-dd"
+						});
+						
+						const extGroup = $('input[name="extension"]');
+						const extText = $('.file-ext');
+						
+						extGroup.each(function() {
+							if (this.checked) {
+								extText.html(`.${this.value}`);
+							}
+							
+							const that = this
+							
+							this.addEventListener('change', function() {
+								extText.html(`.${that.value}`);
+							});
+						});
+    				})
+				</script>
 			 <?php			
 		} elseif (check_admin_referer('ezport-export')) {
             ob_clean(); // clear the output buffer first
@@ -224,23 +257,44 @@
 				
 				$filename = $blogname . '-' . $date;
 			}
-			 
+			
 			$logger = wc_get_logger();
-			$logger->info("EZPort activated on $date");
+			$logger->info('EZPort started on ${date}');
+			
+			$date_range = array();
+			
+			if (isset($_POST['date-start']) && count($_POST['date-start']) > 0) {
+				$date_range['date-start'] = $_POST['date-start'];
+			}
+			
+			if (isset($_POST['date-end']) && $_POST['date-end'] > 0) {
+				$date_range['date-end'] = $_POST['date-end'];
+			}
 
-			$result = ezport_extract_orders($_POST,$listField,$orders);
+			$result = ezport_extract_orders($_POST, $listField, $orders, $date_range);
 			
 			ezport_export_data($result, $filename, $_POST['extension']);
 
         	exit();
 		}
 	}
+	
+	/**
+	 * Load the jQuery UI Datepicker
+	 */
+	function ezport_load_datepicker() {
+		wp_enqueue_script('jquery');
+   	 	wp_enqueue_script('jquery-ui-datepicker');
+    	// Enqueue default style
+    	wp_enqueue_style('jquery-style','https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css'); 
+	}
 	 
 	/**
 	 * Hooks and action, do not touch this
 	 */
+	add_action('init', 'ezport_load_datepicker');
+	add_action('admin_menu', 'ezport_add_submenu_page', 90); // action on visit admin page
+	
 	register_activation_hook(__FILE__, 'ezport_activation_hook'); // activation hook
     register_deactivation_hook(__FILE__, 'ezport_deactivation_hook'); // deactivation hook
-	 
-    add_action('admin_menu', 'ezport_add_submenu_page', 90); // action on visit admin page
 ?>

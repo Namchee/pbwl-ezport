@@ -75,11 +75,30 @@
 	}
 	
 	/**
+	 * Check if the current order is on the requested date range
+	 */
+	function ezport_order_on_range($date_range, $order) {
+		if (count($date_range) == 0) {
+			return true;
+		} else if (count($date_range) == 1) {
+			if (isset($date_range['date-start'])) {
+				return $date_range['date-start'] <= date_format($order->get_date_modified(), "Y-m-d");
+			} else {
+				return $date_range['date-end'] >= date_format($order->get_date_modified(), "Y-m-d");
+			}
+		} else {
+			return $date_range['date-start'] <= date_format($order->get_date_modified(), "Y-m-d") && $date_range['date-end'] >= date_format($order->get_date_modified(), "Y-m-d");
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Extract order data from WC_Order object and transform it into a 2-dimensional array
 	 */
 	function ezport_extract_order_data($order,$fields,$listFields) {
 		$result = []; // array 2 dimensi
-		$list_of_fields=$listFields;
+		$list_of_fields = $listFields;
 		
 		foreach ($order->get_items() as $item) {
 			$base_array = [];
@@ -194,29 +213,22 @@
 	/**
 	 * Extract order data based on criteria
 	 */
-	function ezport_extract_orders($args,$listFields,$orders) {
-		$wc_args = [
-			'limit' => -1, // unlimited
-			'type' => 'shop_order', // order saja
-			'order' => 'ASC', // urutkan menaik
-			'orderby' => 'ID', // urut berdasarkan ID
-			'status' => $args['status'] // include segala status yang dipilih
-		];
+	function ezport_extract_orders($args, $listFields, $orders, $date_range) {
 		$result = [];
-		$fields=[];
-		foreach($args['fields'] as $value){
-			$fields[]=$listFields[$value];
+		$fields = [];
+		foreach ($args['fields'] as $value) {
+			$fields[] = $listFields[$value];
 		} 
-		$result[] =$fields ;
-		$status=[];
-		foreach($args['status'] as $value){
-			$status[]=substr($value,3);
+		$result[] = $fields;
+		$status = [];
+		foreach ($args['status'] as $value) {
+			$status[] = substr($value,3);
 		} 
 		foreach ($orders as $order) {
 			if (empty($order)) {
 				continue;
 			}
-			if(in_array($order->get_status(),$status)){	 
+			if (in_array($order->get_status(), $status) && ezport_order_on_range($date_range, $order)) {	 
 				foreach (ezport_extract_order_data($order,$args['fields'],$listFields) as $entry) {
 					$result[] = $entry;
 				}
