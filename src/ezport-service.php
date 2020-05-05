@@ -80,9 +80,9 @@
 	function ezport_extract_order_data($order,$fields,$listFields) {
 		$result = []; // array 2 dimensi
 		$list_of_fields=$listFields;
-		$base_array = [];
 		
 		foreach ($order->get_items() as $item) {
+			$base_array = [];
 			foreach ($fields as $value) {
 				if($value==0){
 					$base_array[] = $order->get_order_number();
@@ -184,8 +184,8 @@
 					}
 				}
 			}
+			$result[] = $base_array;
 		}
-		$result[] = $base_array;
 		
 		return $result;
 	}
