@@ -78,13 +78,20 @@
 			?>
 				<style>
 					.block {
-    					border: 1px solid #ccc;
-    					border-radius: 5px;
     					padding: 1rem;
+						padding-left: 0;
+					}
+					
+					.m-4 {
+						margin: 1rem;
 					}
 
 					.ml-8 {
     					margin-left: 2rem;
+					}
+					
+					.ml-0 {
+						margin-left: 0;
 					}
 
 					.mb-0 {
@@ -106,6 +113,10 @@
 					.flex {
     					display: flex;
 					}
+					
+					.align-start {
+						align-items: start;
+					}
 				</style>
 			 	<div>
 					<h1>
@@ -116,9 +127,9 @@
 					</p>
 					<form method='post'>
 						<?php wp_nonce_field('ezport-export'); ?>
-						<div class="flex">	
+						<div class="flex align-start">	
 							<div class="block">
-								<p class="font-weight-bold">
+								<p class="font-weight-bold mt-0">
 									Order Status
 								</p>
 								<?php
@@ -134,7 +145,7 @@
 								?>
 							</div>
 							<div class="block ml-8">
-								<p class="font-weight-bold">
+								<p class="font-weight-bold mt-0">
 									Select Field
 								</p>
 								<div class="cc-4 mb-0">
@@ -161,7 +172,7 @@
 								</div>
 							</div>
 							<div class="block ml-8">
-								<p class="font-weight-bold">
+								<p class="font-weight-bold mt-0">
 									File Extension
 								</p>
 								<p>
@@ -184,13 +195,15 @@
 								</p>
 							</div>
 						</div>
-						<p>
-							<p class="font-weight-bold">
-								<label for="filename">Filename</label>
-							</p>
-							<input type="text" id="filename" name="filename" />
-						</p>
-						<p style="margin-top: 2em;">								
+						<div class="flex m-4 ml-0">
+							<div class="block">
+								<p class="font-weight-bold mt-0">
+									<label for="filename">Filename</label>
+								</p>
+								<input type="text" id="filename" name="filename" />
+							</div>
+						</div>
+						<p class="block">								
 							<input type='submit' class='button' name='export' value='Export Order' />
 						</p>
 					</form>
